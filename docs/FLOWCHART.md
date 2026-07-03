@@ -84,3 +84,81 @@ flowchart TD
 
 This flowchart is intentionally simple and shows the main runtime interaction.
 There are no implementation details here, only the connection between components.
+
+
+User
+ |
+ v
+mfwctl command
+ |
+ v
+CLI Parser
+ |
+ v
+CLI Transport
+ |
+ v
+ioctl
+ |
+ v
+Kernel Device Layer
+ |
+ v
+Rule Service
+ |
+ v
+Rule Store
+
+#####
+
+Incoming Packet
+ |
+ v
+Netfilter Adapter
+ |
+ v
+Packet Parser
+ |
+ v
+Firewall Engine
+ |
+ v
+Rule Store
+ |
+ v
+Decision: PASS / DROP
+ |
+ v
+Counters + Logs + debugfs
+
+
+####
+
+Layer 1: Shared API
+-------------------
+include/mfw_uapi.h
+
+Layer 2: User Management Layer
+------------------------------
+user/src/main.c
+user/src/cli_parser.c
+user/src/mfw_client.c
+user/src/printer.c
+
+Layer 3: Kernel Control Layer
+-----------------------------
+kernel/src/mfw_main.c
+kernel/src/mfw_device.c
+kernel/src/mfw_rules.c
+
+Layer 4: Kernel Packet Layer
+----------------------------
+kernel/src/mfw_netfilter.c
+kernel/src/mfw_packet.c
+kernel/src/mfw_engine.c
+
+Layer 5: Observability Layer
+----------------------------
+kernel/src/mfw_debugfs.c
+docs/
+scripts/

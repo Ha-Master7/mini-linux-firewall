@@ -12,53 +12,61 @@ A shared interface is defined in `include/`, and helper files, scripts, and test
 
 ```
 mini-linux-firewall/
-├── Makefile
-├── README.md
-├── docs/
-│   ├── ARCHITECTURE.md
-│   ├── DEVELOPMENT_STAGES.md
-│   ├── INTERVIEW_NOTES.md
-│   └── TEST_PLAN.md
 ├── include/
 │   └── mfw_uapi.h
+│
 ├── kernel/
-│   ├── Makefile
-│   ├── mfw.c
 │   ├── include/
-│   │   ├── mfw_debugfs.h
 │   │   ├── mfw_device.h
+│   │   ├── mfw_rules.h
+│   │   ├── mfw_packet.h
 │   │   ├── mfw_engine.h
 │   │   ├── mfw_netfilter.h
-│   │   ├── mfw_packet.h
-│   │   └── mfw_rules.h
-│   └── src/
-│       ├── mfw_debugfs.c
-│       ├── mfw_device.c
-│       ├── mfw_engine.c
-│       ├── mfw_main.c
-│       ├── mfw_netfilter.c
-│       ├── mfw_packet.c
-│       └── mfw_rules.c
+│   │   └── mfw_debugfs.h
+│   │
+│   ├── src/
+│   │   ├── mfw_main.c
+│   │   ├── mfw_device.c
+│   │   ├── mfw_rules.c
+│   │   ├── mfw_packet.c
+│   │   ├── mfw_engine.c
+│   │   ├── mfw_netfilter.c
+│   │   └── mfw_debugfs.c
+│   │
+│   └── Makefile
+│
+├── user/
+│   ├── include/
+│   │   ├── cli_parser.h
+│   │   ├── mfw_client.h
+│   │   └── printer.h
+│   │
+│   ├── src/
+│   │   ├── main.c
+│   │   ├── cli_parser.c
+│   │   ├── mfw_client.c
+│   │   └── printer.c
+│   │
+│   └── Makefile
+│
+├── docs/
+│   ├── ARCHITECTURE.md
+│   ├── INTERVIEW_NOTES.md
+│   ├── TEST_PLAN.md
+│   └── DEVELOPMENT_STAGES.md
+│
 ├── scripts/
 │   ├── load_module.sh
+│   ├── unload_module.sh
 │   ├── run_basic_test.sh
-│   ├── show_debug.sh
-│   └── unload_module.sh
+│   └── show_debug.sh
+│
 ├── tests/
-│   ├── manual_tests/
-│   └── user_tests/
-└── user/
-    ├── Makefile
-    ├── include/
-    │   ├── cli_parser.h
-    │   ├── mfw_client.h
-    │   └── printer.h
-    ├── mfwctl.c
-    └── src/
-        ├── cli_parser.c
-        ├── main.c
-        ├── mfw_client.c
-        └── printer.c
+│   ├── user_tests/
+│   └── manual_tests/
+│
+├── Makefile
+└── README.md
 ```
 
 ## Human-friendly overview
@@ -119,3 +127,24 @@ mini-linux-firewall/
 - The current structure is a skeleton, so source files are placeholders.
 - Real implementation files should populate `kernel/src/` and `user/src/` with the actual logic.
 - The split between `include/`, `kernel/`, and `user/` keeps shared API, kernel code, and user code separate and easy to maintain.
+
+
+
+User Space:
+- CLI
+- parsing commands
+- sending ioctl
+- printing rules
+
+Kernel Space:
+- device file
+- ioctl handler
+- rule table
+- Netfilter hook
+- packet decision
+- counters/logging
+
+Shared:
+- mfw_uapi.h
+- structs
+- ioctl definitions
