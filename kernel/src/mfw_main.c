@@ -6,6 +6,7 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 
+#include "mfw_device.h"
 #include "mfw_rules.h"
 #include "mfw_netfilter.h"
 #include "mfw_debugfs.h"
