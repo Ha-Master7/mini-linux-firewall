@@ -11,6 +11,7 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 UNIT_DIR="$PROJECT_ROOT/tests/unit"
 KERNEL_STUBS="$UNIT_DIR/kernel_stubs"
+MFW_TEST_CPPFLAGS="${MFW_TEST_CPPFLAGS:--I$PROJECT_ROOT/include -I$PROJECT_ROOT/user/include -I$PROJECT_ROOT/kernel/include}"
 
 fail() {
     echo "[FAIL] $1" >&2
@@ -25,28 +26,19 @@ compile_and_run() {
 
     [[ -f "$src" ]] || fail "Missing file: $src"
 
-    gcc -Wall -Wextra "$@" -o "$bin" "$src"
+    gcc -Wall -Wextra $MFW_TEST_CPPFLAGS "$@" -o "$bin" "$src"
     "$bin"
 }
 
-compile_and_run uapi_test "$UNIT_DIR/uapi_test.c" \
-    -I"$PROJECT_ROOT/include"
+compile_and_run uapi_test "$UNIT_DIR/uapi_test.c"
 
-compile_and_run cli_main_logic_test "$UNIT_DIR/cli_main_logic_test.c" \
-    -I"$PROJECT_ROOT/include" \
-    -I"$PROJECT_ROOT/user/include"
+compile_and_run cli_main_logic_test "$UNIT_DIR/cli_main_logic_test.c"
 
-compile_and_run mfw_client_test "$UNIT_DIR/mfw_client_test.c" \
-    -I"$PROJECT_ROOT/include" \
-    -I"$PROJECT_ROOT/user/include"
+compile_and_run mfw_client_test "$UNIT_DIR/mfw_client_test.c"
 
 compile_and_run mfw_rules_test "$UNIT_DIR/mfw_rules_test.c" \
-    -I"$KERNEL_STUBS" \
-    -I"$PROJECT_ROOT/include" \
-    -I"$PROJECT_ROOT/kernel/include"
+    -I"$KERNEL_STUBS"
 
-compile_and_run skeleton_contract_test "$UNIT_DIR/skeleton_contract_test.c" \
-    -I"$PROJECT_ROOT/user/include" \
-    -I"$PROJECT_ROOT/kernel/include"
+compile_and_run skeleton_contract_test "$UNIT_DIR/skeleton_contract_test.c"
 
 echo "[PASS] all unit tests passed"

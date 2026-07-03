@@ -9,6 +9,8 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TEST_DIR="$PROJECT_ROOT/tests/integration"
 
+export MFW_TEST_CPPFLAGS="-I$PROJECT_ROOT/include -I$PROJECT_ROOT/user/include -I$PROJECT_ROOT/kernel/include"
+
 tests=(
     "$TEST_DIR/test_01_uapi.sh"
     "$TEST_DIR/test_02_kernel_build_load.sh"
