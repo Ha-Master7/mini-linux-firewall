@@ -1,11 +1,25 @@
+# user/Makefile
+
 CC ?= gcc
-CFLAGS ?= -Wall -Wextra -Werror -g -O2
+
+CFLAGS ?= -Wall -Wextra -g
+CPPFLAGS += -Iinclude
 CPPFLAGS += -I../include
 
-all: mfwctl
+TARGET := mfwctl
 
-mfwctl: mfwctl.c ../include/mfw_uapi.h
-	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ mfwctl.c
+SRCS := src/main.c \
+        src/mfw_client.c
+
+OBJS := $(SRCS:.c=.o)
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(OBJS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 clean:
-	rm -f mfwctl
+	rm -f $(OBJS) $(TARGET)

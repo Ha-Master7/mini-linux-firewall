@@ -13,7 +13,8 @@ PWD := $(shell pwd)
 
 obj-m += mfw.o
 
-mfw-y := src/mfw_main.o
+mfw-y := src/mfw_main.o \
+         src/mfw_device.o
 
 ccflags-y += -I$(src)/include
 ccflags-y += -I$(src)/../include
