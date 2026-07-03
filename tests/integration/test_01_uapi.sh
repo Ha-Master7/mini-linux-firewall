@@ -11,7 +11,13 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 UNIT_DIR="$PROJECT_ROOT/tests/unit"
 KERNEL_STUBS="$UNIT_DIR/kernel_stubs"
-MFW_TEST_CPPFLAGS="${MFW_TEST_CPPFLAGS:--I$PROJECT_ROOT/include -I$PROJECT_ROOT/user/include -I$PROJECT_ROOT/kernel/include}"
+MFW_TEST_CPPFLAGS="${MFW_TEST_CPPFLAGS:-}"
+
+if [[ -z "$MFW_TEST_CPPFLAGS" ]]; then
+    MFW_TEST_CPPFLAGS="-I$PROJECT_ROOT/include -I$PROJECT_ROOT/user/include -I$PROJECT_ROOT/kernel/include"
+fi
+
+read -r -a COMMON_CPPFLAGS <<< "$MFW_TEST_CPPFLAGS"
 
 fail() {
     echo "[FAIL] $1" >&2
@@ -26,9 +32,20 @@ compile_and_run() {
 
     [[ -f "$src" ]] || fail "Missing file: $src"
 
-    gcc -Wall -Wextra $MFW_TEST_CPPFLAGS "$@" -o "$bin" "$src"
+    echo "gcc -Wall -Wextra ${COMMON_CPPFLAGS[*]} $* -o $bin $src"
+    gcc -Wall -Wextra "${COMMON_CPPFLAGS[@]}" "$@" -o "$bin" "$src"
     "$bin"
 }
+
+require_file() {
+    local path="$1"
+
+    [[ -f "$path" ]] || fail "Missing required file: $path"
+}
+
+require_file "$PROJECT_ROOT/include/mfw_uapi.h"
+require_file "$PROJECT_ROOT/kernel/include/mfw_rules.h"
+require_file "$PROJECT_ROOT/kernel/src/mfw_rules.c"
 
 compile_and_run uapi_test "$UNIT_DIR/uapi_test.c"
 

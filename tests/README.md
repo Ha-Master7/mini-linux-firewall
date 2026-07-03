@@ -28,6 +28,13 @@ From the project root:
 bash tests/run_all.sh
 ```
 
+`tests/run_all.sh` exports the shared include flags through
+`MFW_TEST_CPPFLAGS`, so unit tests can include project headers normally:
+
+```text
+-Iinclude -Iuser/include -Ikernel/include
+```
+
 This runs:
 
 ```text
