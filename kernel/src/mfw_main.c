@@ -15,8 +15,17 @@
  */
 static int __init mfw_init(void)
 {
-    pr_info("Mini Firewall kernel module loaded\n");
-    pr_info("Stage 2: kernel module skeleton is working\n");
+    int ret;
+
+    pr_info("Mini Firewall kernel module loading\n");
+
+    ret = mfw_device_init();
+    if (ret != 0) {
+        pr_err("failed to initialize device layer\n");
+        return ret;
+    }
+
+    pr_info("Mini Firewall kernel module loaded successfully\n");
 
     return 0;
 }
@@ -30,7 +39,11 @@ static int __init mfw_init(void)
  */
 static void __exit mfw_exit(void)
 {
-    pr_info("Mini Firewall kernel module unloaded\n");
+    pr_info("Mini Firewall kernel module unloading\n");
+
+    mfw_device_exit();
+
+    pr_info("Mini Firewall kernel module unloaded successfully\n");
 }
 
 module_init(mfw_init);
