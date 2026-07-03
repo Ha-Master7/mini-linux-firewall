@@ -62,8 +62,10 @@ mini-linux-firewall/
 │   └── show_debug.sh
 │
 ├── tests/
-│   ├── user_tests/
-│   └── manual_tests/
+│   ├── unit/
+│   ├── integration/
+│   ├── run_all.sh
+│   └── README.md
 │
 ├── Makefile
 └── README.md
@@ -76,7 +78,7 @@ mini-linux-firewall/
 - `README.md`: high-level project description and usage notes.
 - `docs/`: architecture, development plan, test plan, and notes.
 - `scripts/`: helper shell scripts for module actions and debugging.
-- `tests/`: placeholder directories for future automated and manual tests.
+- `tests/`: unit tests, integration tests, and the test runner.
 
 ### Shared interface
 - `include/mfw_uapi.h`: shared user/kernel API definitions.
