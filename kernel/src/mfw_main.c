@@ -24,9 +24,16 @@ static int __init mfw_init(void)
 
     pr_info("Mini Firewall kernel module loading\n");
 
+    ret = mfw_rules_init();
+    if (ret != 0) {
+        pr_err("failed to initialize rule table\n");
+        return ret;
+    }
+
     ret = mfw_device_init();
     if (ret != 0) {
         pr_err("failed to initialize device layer\n");
+        mfw_rules_exit();
         return ret;
     }
 
@@ -47,6 +54,7 @@ static void __exit mfw_exit(void)
     pr_info("Mini Firewall kernel module unloading\n");
 
     mfw_device_exit();
+    mfw_rules_exit();
 
     pr_info("Mini Firewall kernel module unloaded successfully\n");
 }

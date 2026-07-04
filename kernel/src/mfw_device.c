@@ -1,4 +1,4 @@
-/* mfw_device.c - skeleton (no implementation) */
+/* mfw_device.c - /dev/mfw ioctl implementation */
 // kernel/src/mfw_device.c
 
 #define pr_fmt(fmt) "mfw_device: " fmt
@@ -7,10 +7,11 @@
 #include <linux/miscdevice.h>
 #include <linux/uaccess.h>
 #include <linux/errno.h>
-#include <linux/string.h>
 #include <linux/kernel.h>
+#include <linux/slab.h>
 
 #include "mfw_device.h"
+#include "mfw_rules.h"
 #include "mfw_uapi.h"
 
 /*
@@ -19,24 +20,18 @@
  * This function is called whenever user-space sends an ioctl
  * command to /dev/mfw.
  *
- * At this stage, we only prove communication works.
- * The real rule table will be implemented in the next stage.
+ * The ioctl commands bridge user-space requests to the kernel rule table.
  */
 static long mfw_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
     struct mfw_rule rule;
-    struct mfw_rules_dump dump;
+    struct mfw_rules_dump *dump;
     __u32 src_ip;
 
     (void)file;
 
     switch (cmd) {
     case MFW_IOCTL_ADD_RULE:
-        /*
-         * User-space sends a firewall rule.
-         * For now, we only copy it and print it.
-         * We do NOT store it yet.
-         */
         if (copy_from_user(&rule, (void __user *)arg, sizeof(rule)) != 0) {
             return -EFAULT;
         }
@@ -46,46 +41,38 @@ static long mfw_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
                 rule.action,
                 rule.enabled);
 
-        pr_info("Rule table is not implemented yet\n");
-
-        return -EOPNOTSUPP;
+        return mfw_rules_add(&rule);
 
     case MFW_IOCTL_DEL_RULE:
-        /*
-         * User-space sends an IPv4 address.
-         * For now, we only copy it and print it.
-         */
         if (copy_from_user(&src_ip, (void __user *)arg, sizeof(src_ip)) != 0) {
             return -EFAULT;
         }
 
         pr_info("DEL_RULE received: src=%pI4\n", &src_ip);
-        pr_info("Rule table is not implemented yet\n");
 
-        return -EOPNOTSUPP;
+        return mfw_rules_delete(src_ip);
 
     case MFW_IOCTL_GET_RULES:
-        /*
-         * Return an empty rules list for now.
-         * In the next stage, this will return the real rule table.
-         */
-        memset(&dump, 0, sizeof(dump));
-        dump.count = 0;
+        dump = kzalloc(sizeof(*dump), GFP_KERNEL);
+        if (dump == NULL) {
+            return -ENOMEM;
+        }
 
-        if (copy_to_user((void __user *)arg, &dump, sizeof(dump)) != 0) {
+        mfw_rules_snapshot(dump);
+
+        if (copy_to_user((void __user *)arg, dump, sizeof(*dump)) != 0) {
+            kfree(dump);
             return -EFAULT;
         }
 
-        pr_info("GET_RULES received: returned empty list\n");
+        pr_info("GET_RULES received: returned %u rules\n", dump->count);
+        kfree(dump);
 
         return 0;
 
     case MFW_IOCTL_CLEAR:
-        /*
-         * Nothing to clear yet.
-         * The command works, but there is no table yet.
-         */
-        pr_info("CLEAR received: nothing to clear yet\n");
+        mfw_rules_clear();
+        pr_info("CLEAR received: rules cleared\n");
 
         return 0;
 
