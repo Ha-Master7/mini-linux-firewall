@@ -15,7 +15,7 @@ obj-m += mfw.o
 
 mfw-y := src/mfw_main.o \
          src/mfw_device.o
-
+         src/mfw_rules.o
 ccflags-y += -I$(src)/include
 ccflags-y += -I$(src)/../include
 
