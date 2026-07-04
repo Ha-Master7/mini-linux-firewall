@@ -68,8 +68,9 @@ if [[ "$add_rc" -eq 2 ]]; then
     require_output_contains "$add_output" "Rule Table is not implemented yet"
 fi
 
-sudo dmesg | grep -q "ADD_RULE received" || {
-    sudo dmesg | tail -n 50
+dmesg_output="$(sudo dmesg)"
+grep -q "ADD_RULE received" <<< "$dmesg_output" || {
+    tail -n 50 <<< "$dmesg_output"
     fail "Expected dmesg to show ADD_RULE received"
 }
 

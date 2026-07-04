@@ -36,9 +36,12 @@ require_file() {
 
 require_dmesg_contains() {
     local expected="$1"
+    local dmesg_output
 
-    sudo dmesg | grep -q "$expected" || {
-        sudo dmesg | tail -n 50
+    dmesg_output="$(sudo dmesg)"
+
+    grep -q "$expected" <<< "$dmesg_output" || {
+        tail -n 50 <<< "$dmesg_output"
         fail "Expected dmesg to contain: $expected"
     }
 }
