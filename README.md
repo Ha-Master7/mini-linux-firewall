@@ -17,6 +17,39 @@ Educational Linux systems project for practicing C, Linux kernel modules, user/k
 - Logging: `pr_info_ratelimited()` visible in `dmesg`
 - Status: `/sys/kernel/debug/mfw/rules`
 
+## Basic flow
+
+The firewall has two main paths:
+
+1. User commands flow from `user/mfwctl` to the kernel via `/dev/mfw` and `ioctl`.
+2. Packet flow enters the Netfilter hook in the kernel and is checked against the rule table.
+
+```mermaid
+flowchart TB
+    subgraph User
+dir[User CLI sends command]
+    ioctl[ioctl to /dev/mfw]
+    end
+    subgraph Kernel
+    device[mfw_device.c receives ioctl]
+    rules[mfw_rules.c updates/checks rules]
+    packet[mfw_netfilter.c packet hook]
+    decision[Accept or Drop]
+    debug[debugfs rule/status view]
+    end
+
+    dir --> ioctl --> device --> rules
+    packet --> rules --> decision
+    rules --> debug
+```
+
+If Mermaid rendering is unavailable, the flow is:
+
+- `user/mfwctl` builds a rule command and calls `ioctl` on `/dev/mfw`.
+- `kernel/mfw_device.c` receives the ioctl and updates or queries the rule table.
+- `kernel/mfw_netfilter.c` intercepts packets and asks `kernel/mfw_rules.c` whether the source IP matches a rule.
+- The kernel returns `ACCEPT` or `DROP`, and the rule state is visible through debugfs.
+
 ## Requirements
 
 Ubuntu/Debian example:
