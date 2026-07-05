@@ -35,6 +35,7 @@ cleanup() {
 
 trap cleanup EXIT
 
+make -C "$KERNEL_DIR" clean
 make -C "$KERNEL_DIR"
 make -C "$USER_DIR"
 
@@ -42,6 +43,11 @@ sudo mount -t debugfs none /sys/kernel/debug 2>/dev/null || true
 
 cleanup
 sudo insmod "$MODULE_PATH"
+
+sudo dmesg | tail -n 80 | grep -q "debugfs created" || {
+    sudo dmesg | tail -n 80
+    fail "debugfs init message was not found in dmesg"
+}
 
 [[ -d /sys/kernel/debug/mfw ]] || fail "Missing debugfs directory: /sys/kernel/debug/mfw"
 [[ -f "$DEBUG_RULES" ]] || fail "Missing debugfs rules file: $DEBUG_RULES"
