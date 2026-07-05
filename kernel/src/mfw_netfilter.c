@@ -10,6 +10,7 @@
 
 #include "mfw_netfilter.h"
 #include "mfw_packet.h"
+#include "mfw_engine.h"
 
 /*
  * Netfilter hook callback.
