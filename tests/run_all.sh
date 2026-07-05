@@ -8,8 +8,10 @@ set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TEST_DIR="$PROJECT_ROOT/tests/integration"
+UNIT_DIR="$PROJECT_ROOT/tests/unit"
+KERNEL_STUBS="$UNIT_DIR/kernel_stubs"
 
-export MFW_TEST_CPPFLAGS="-I$PROJECT_ROOT/include -I$PROJECT_ROOT/user/include -I$PROJECT_ROOT/kernel/include"
+export MFW_TEST_CPPFLAGS="-I$PROJECT_ROOT/include -I$PROJECT_ROOT/user/include -I$PROJECT_ROOT/kernel/include -I$KERNEL_STUBS"
 
 tests=(
     "$TEST_DIR/test_01_uapi.sh"
