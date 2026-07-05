@@ -5,9 +5,7 @@
 #include <linux/kernel.h>
 #include <linux/netfilter.h>
 
-#include "mfw_engine.h"
-#include "mfw_packet.h"
-#include "mfw_rules.h"
+#include "mfw_all.h"
 #include "mfw_uapi.h"
 
 /*

@@ -5,11 +5,7 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
-
-#include "mfw_device.h"
-#include "mfw_rules.h"
-#include "mfw_netfilter.h"
-#include "mfw_debugfs.h"
+#include "mfw_all.h"
 
 /*
  * mfw_init

@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "mfw_client.h"
+#include "mfw_user.h"
 
 static void print_usage(const char *program_name)
 {

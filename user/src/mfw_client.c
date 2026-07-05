@@ -5,7 +5,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#include "mfw_client.h"
+#include "mfw_user.h"
 
 static int mfw_open_device(void)
 {

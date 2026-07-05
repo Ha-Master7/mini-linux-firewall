@@ -9,9 +9,7 @@
 #include <linux/errno.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
-
-#include "mfw_device.h"
-#include "mfw_rules.h"
+#include "mfw_all.h"
 #include "mfw_uapi.h"
 
 /*

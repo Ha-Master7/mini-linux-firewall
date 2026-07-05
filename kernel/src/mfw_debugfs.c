@@ -8,9 +8,7 @@
 #include <linux/fs.h>
 #include <linux/kernel.h>
 #include <linux/seq_file.h>
-
-#include "mfw_debugfs.h"
-#include "mfw_rules.h"
+#include "mfw_all.h"
 #include "mfw_uapi.h"
 
 static struct dentry *mfw_debugfs_dir;

@@ -7,8 +7,7 @@
 #include <linux/kernel.h>
 #include <linux/skbuff.h>
 #include <linux/string.h>
-
-#include "mfw_packet.h"
+#include "mfw_all.h"
 
 /*
  * mfw_packet_parse

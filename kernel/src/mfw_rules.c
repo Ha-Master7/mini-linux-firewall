@@ -6,8 +6,7 @@
 #include <linux/kernel.h>
 #include <linux/spinlock.h>
 #include <linux/string.h>
-
-#include "mfw_rules.h"
+#include "mfw_all.h"
 #include "mfw_uapi.h"
 
 /*
