@@ -14,7 +14,9 @@ KERNEL_STUBS="$UNIT_DIR/kernel_stubs"
 MFW_TEST_CPPFLAGS="${MFW_TEST_CPPFLAGS:-}"
 
 if [[ -z "$MFW_TEST_CPPFLAGS" ]]; then
-    MFW_TEST_CPPFLAGS="-I$PROJECT_ROOT/include -I$PROJECT_ROOT/user/include -I$PROJECT_ROOT/kernel/include"
+    MFW_TEST_CPPFLAGS="-I$PROJECT_ROOT/include -I$PROJECT_ROOT/user/include -I$PROJECT_ROOT/kernel/include -I$KERNEL_STUBS"
+else
+    MFW_TEST_CPPFLAGS="$MFW_TEST_CPPFLAGS -I$KERNEL_STUBS"
 fi
 
 read -r -a COMMON_CPPFLAGS <<< "$MFW_TEST_CPPFLAGS"
@@ -56,6 +58,7 @@ compile_and_run mfw_client_test "$UNIT_DIR/mfw_client_test.c"
 compile_and_run mfw_rules_test "$UNIT_DIR/mfw_rules_test.c" \
     -I"$KERNEL_STUBS"
 
-compile_and_run skeleton_contract_test "$UNIT_DIR/skeleton_contract_test.c"
+compile_and_run skeleton_contract_test "$UNIT_DIR/skeleton_contract_test.c" \
+    -I"$KERNEL_STUBS"
 
 echo "[PASS] all unit tests passed"
