@@ -49,8 +49,16 @@ sudo dmesg | tail -n 80 | grep -q "debugfs created" || {
     fail "debugfs init message was not found in dmesg"
 }
 
-[[ -d /sys/kernel/debug/mfw ]] || fail "Missing debugfs directory: /sys/kernel/debug/mfw"
-[[ -f "$DEBUG_RULES" ]] || fail "Missing debugfs rules file: $DEBUG_RULES"
+sudo test -d /sys/kernel/debug/mfw || {
+    sudo dmesg | tail -n 80
+    sudo ls -la /sys/kernel/debug || true
+    fail "Missing debugfs directory: /sys/kernel/debug/mfw"
+}
+
+sudo test -f "$DEBUG_RULES" || {
+    sudo ls -la /sys/kernel/debug/mfw || true
+    fail "Missing debugfs rules file: $DEBUG_RULES"
+}
 
 sudo "$MFWCTL" clear
 sudo "$MFWCTL" add 192.168.1.5 drop
