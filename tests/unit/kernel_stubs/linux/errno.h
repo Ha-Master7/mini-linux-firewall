@@ -19,4 +19,12 @@
 #define ENOENT 2
 #endif
 
+#ifndef EBADF
+#define EBADF 9
+#endif
+
+#ifndef EOPNOTSUPP
+#define EOPNOTSUPP 95
+#endif
+
 #endif
