@@ -1,8 +1,15 @@
 /* mfw_netfilter.h - skeleton */
-
 #ifndef MFW_NETFILTER_H
 #define MFW_NETFILTER_H
 
-/* Netfilter hooks */
+/*
+ * Register the Netfilter hook.
+ */
+int mfw_netfilter_init(void);
 
-#endif
+/*
+ * Unregister the Netfilter hook.
+ */
+void mfw_netfilter_exit(void);
+
+#endif /* MFW_NETFILTER_H */

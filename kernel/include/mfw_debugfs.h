@@ -3,6 +3,18 @@
 #ifndef MFW_DEBUGFS_H
 #define MFW_DEBUGFS_H
 
-/* debugfs helpers */
+/*
+ * Initialize debugfs entries.
+ *
+ * Creates:
+ * /sys/kernel/debug/mfw/
+ * /sys/kernel/debug/mfw/rules
+ */
+int mfw_debugfs_init(void);
 
-#endif
+/*
+ * Remove debugfs entries.
+ */
+void mfw_debugfs_exit(void);
+
+#endif /* MFW_DEBUGFS_H */

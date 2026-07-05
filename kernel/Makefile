@@ -16,6 +16,11 @@ obj-m += mfw.o
 mfw-y := src/mfw_main.o \
          src/mfw_device.o \
          src/mfw_rules.o
+		 src/mfw_packet.o \
+		 src/mfw_netfilter.o \
+		 src/mfw_engine.o \
+		 src/mfw_debugfs.o
+
 ccflags-y += -I$(src)/include
 ccflags-y += -I$(src)/../include
 

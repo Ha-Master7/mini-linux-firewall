@@ -52,12 +52,14 @@ static int mfw_rule_is_valid(const struct mfw_rule *rule)
 
 int mfw_rules_init(void)
 {
+    unsigned long flags;
+
     spin_lock_init(&rules_lock);
 
-    spin_lock(&rules_lock);
+    spin_lock_irqsave(&rules_lock, flags);
     memset(rules, 0, sizeof(rules));
     rule_count = 0;
-    spin_unlock(&rules_lock);
+    spin_unlock_irqrestore(&rules_lock, flags);
 
     pr_info("rule table initialized, max rules=%d\n", MFW_MAX_RULES);
 
@@ -66,10 +68,12 @@ int mfw_rules_init(void)
 
 void mfw_rules_exit(void)
 {
-    spin_lock(&rules_lock);
+    unsigned long flags;
+
+    spin_lock_irqsave(&rules_lock, flags);
     memset(rules, 0, sizeof(rules));
     rule_count = 0;
-    spin_unlock(&rules_lock);
+    spin_unlock_irqrestore(&rules_lock, flags);
 
     pr_info("rule table cleaned up\n");
 }
@@ -78,6 +82,7 @@ int mfw_rules_add(const struct mfw_rule *rule)
 {
     __u32 i;
     struct mfw_rule new_rule;
+    unsigned long flags;
 
     if (!mfw_rule_is_valid(rule)) {
         return -EINVAL;
@@ -92,24 +97,24 @@ int mfw_rules_add(const struct mfw_rule *rule)
     new_rule = *rule;
     new_rule.hits = 0;
 
-    spin_lock(&rules_lock);
+    spin_lock_irqsave(&rules_lock, flags);
 
     for (i = 0; i < rule_count; i++) {
         if (rules[i].src_ip == new_rule.src_ip) {
-            spin_unlock(&rules_lock);
+            spin_unlock_irqrestore(&rules_lock, flags);
             return -EEXIST;
         }
     }
 
     if (rule_count >= MFW_MAX_RULES) {
-        spin_unlock(&rules_lock);
+        spin_unlock_irqrestore(&rules_lock, flags);
         return -ENOSPC;
     }
 
     rules[rule_count] = new_rule;
     rule_count++;
 
-    spin_unlock(&rules_lock);
+    spin_unlock_irqrestore(&rules_lock, flags);
 
     pr_info("rule added: src=%pI4 action=%u enabled=%u\n",
             &new_rule.src_ip,
@@ -123,8 +128,9 @@ int mfw_rules_delete(__u32 src_ip)
 {
     __u32 i;
     __u32 j;
+    unsigned long flags;
 
-    spin_lock(&rules_lock);
+    spin_lock_irqsave(&rules_lock, flags);
 
     for (i = 0; i < rule_count; i++) {
         if (rules[i].src_ip == src_ip) {
@@ -135,7 +141,7 @@ int mfw_rules_delete(__u32 src_ip)
             memset(&rules[rule_count - 1], 0, sizeof(rules[rule_count - 1]));
             rule_count--;
 
-            spin_unlock(&rules_lock);
+            spin_unlock_irqrestore(&rules_lock, flags);
 
             pr_info("rule deleted: src=%pI4\n", &src_ip);
 
@@ -143,17 +149,19 @@ int mfw_rules_delete(__u32 src_ip)
         }
     }
 
-    spin_unlock(&rules_lock);
+    spin_unlock_irqrestore(&rules_lock, flags);
 
     return -ENOENT;
 }
 
 void mfw_rules_clear(void)
 {
-    spin_lock(&rules_lock);
+    unsigned long flags;
+
+    spin_lock_irqsave(&rules_lock, flags);
     memset(rules, 0, sizeof(rules));
     rule_count = 0;
-    spin_unlock(&rules_lock);
+    spin_unlock_irqrestore(&rules_lock, flags);
 
     pr_info("all rules cleared\n");
 }
@@ -161,6 +169,7 @@ void mfw_rules_clear(void)
 void mfw_rules_snapshot(struct mfw_rules_dump *dump)
 {
     __u32 i;
+    unsigned long flags;
 
     if (dump == NULL) {
         return;
@@ -168,7 +177,7 @@ void mfw_rules_snapshot(struct mfw_rules_dump *dump)
 
     memset(dump, 0, sizeof(*dump));
 
-    spin_lock(&rules_lock);
+    spin_lock_irqsave(&rules_lock, flags);
 
     dump->count = rule_count;
 
@@ -176,14 +185,15 @@ void mfw_rules_snapshot(struct mfw_rules_dump *dump)
         dump->rules[i] = rules[i];
     }
 
-    spin_unlock(&rules_lock);
+    spin_unlock_irqrestore(&rules_lock, flags);
 }
 
 int mfw_rules_match_src_ip(__u32 src_ip, struct mfw_rule *out_rule)
 {
     __u32 i;
+    unsigned long flags;
 
-    spin_lock(&rules_lock);
+    spin_lock_irqsave(&rules_lock, flags);
 
     for (i = 0; i < rule_count; i++) {
         if (rules[i].enabled == 1 && rules[i].src_ip == src_ip) {
@@ -193,12 +203,12 @@ int mfw_rules_match_src_ip(__u32 src_ip, struct mfw_rule *out_rule)
                 *out_rule = rules[i];
             }
 
-            spin_unlock(&rules_lock);
+            spin_unlock_irqrestore(&rules_lock, flags);
             return 1;
         }
     }
 
-    spin_unlock(&rules_lock);
+    spin_unlock_irqrestore(&rules_lock, flags);
 
     return 0;
 }

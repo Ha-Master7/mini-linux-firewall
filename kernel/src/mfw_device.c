@@ -77,6 +77,7 @@ static long mfw_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
         return 0;
 
     default:
+        pr_err("Unknown ioctl command: 0x%x\n", cmd);
         return -ENOTTY;
     }
 }
@@ -128,3 +129,4 @@ void mfw_device_exit(void)
     misc_deregister(&mfw_misc_device);
     pr_info("/dev/mfw unregistered\n");
 }
+ 

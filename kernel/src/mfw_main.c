@@ -37,6 +37,23 @@ static int __init mfw_init(void)
         return ret;
     }
 
+    ret = mfw_debugfs_init();
+    if (ret != 0) {
+        pr_err("failed to initialize debugfs layer\n");
+        mfw_device_exit();
+        mfw_rules_exit();
+        return ret;
+    }
+
+    ret = mfw_netfilter_init();
+    if (ret != 0) {
+        pr_err("failed to initialize Netfilter layer\n");
+        mfw_debugfs_exit();
+        mfw_device_exit();
+        mfw_rules_exit();
+        return ret;
+    }
+
     pr_info("Mini Firewall kernel module loaded successfully\n");
 
     return 0;
@@ -53,6 +70,8 @@ static void __exit mfw_exit(void)
 {
     pr_info("Mini Firewall kernel module unloading\n");
 
+    mfw_netfilter_exit();
+    mfw_debugfs_exit();
     mfw_device_exit();
     mfw_rules_exit();
 
@@ -64,5 +83,5 @@ module_exit(mfw_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Mini Linux Firewall Project");
-MODULE_DESCRIPTION("Mini Linux Firewall - Stage 2 Kernel Module Skeleton");
+MODULE_DESCRIPTION("Mini Linux Firewall - Netfilter LOG-only Stage");
 MODULE_VERSION("0.1");

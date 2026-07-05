@@ -150,11 +150,6 @@ static int handle_add(int argc, char **argv)
     rule.hits = 0;
 
     if (mfw_client_add_rule(&rule) != 0) {
-        if (errno == EOPNOTSUPP) {
-            fprintf(stderr,
-                    "ADD_RULE reached the kernel, but Rule Table is not implemented yet.\n");
-            return 2;
-        }
 
         perror("mfwctl: add failed");
         return 1;
@@ -180,11 +175,6 @@ static int handle_del(int argc, char **argv)
     }
 
     if (mfw_client_delete_rule(src_ip) != 0) {
-        if (errno == EOPNOTSUPP) {
-            fprintf(stderr,
-                    "DEL_RULE reached the kernel, but Rule Table is not implemented yet.\n");
-            return 2;
-        }
 
         perror("mfwctl: del failed");
         return 1;
